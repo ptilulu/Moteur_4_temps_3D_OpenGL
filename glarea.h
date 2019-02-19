@@ -10,6 +10,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include "demicylindre.h"
+#include "cylindre.h"
 
 class GLArea : public QOpenGLWidget,
                protected QOpenGLFunctions
@@ -54,9 +55,9 @@ private:
     double m_radius = 0.5;
     double m_ratio = 1;
 
-    DemiCylindre *c1 =new DemiCylindre (0.8, 0.1 , 1   , 20 , 255, 0  , 0  );
-
-    GLint nb_triangles= c1->tf*c1->nb_fac;
+    DemiCylindre *dc1   = new DemiCylindre  (0.8, 0.1 , 1   , 20 , 255, 0  , 0  );
+    Cylindre *c1        = new Cylindre      (0.8, 1   , 20 , 255, 255, 0  );
+    GLint nb_triangles;
 
     QOpenGLShaderProgram *m_program;
 

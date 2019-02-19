@@ -20,11 +20,13 @@ TEMPLATE = app
 SOURCES += main.cpp \
         princ.cpp   \
         glarea.cpp  \
-        demicylindre.cpp
+        demicylindre.cpp \
+    cylindre.cpp
 
 HEADERS  += princ.h \
         glarea.h    \
-        demicylindre.h
+        demicylindre.h \
+    cylindre.h
 
 FORMS    += princ.ui
 

@@ -9,7 +9,6 @@ DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat ep_cyl, GLfloat r_cyl, GLint
     this->nb_fac = nb_fac;      // nombre de facettes
     this->nb_triangles=(tf*nb_fac+tb);
     this->setColor(r,v,b);
-    qDebug() << "youou" <<nb_triangles;
 }
 
 void DemiCylindre::setColor(int r, int v, int b){
@@ -19,7 +18,6 @@ void DemiCylindre::setColor(int r, int v, int b){
 }
 
 void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
-    qDebug() << "bonjour";
     GLfloat alpha = M_PI/nb_fac;
     int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8;
     QVector3D last;
@@ -47,8 +45,6 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
         QVector3D vAB(vs[B*3+0]-vs[A*3+0], vs[B*3+1]-vs[A*3+1], vs[B*3+2]-vs[A*3+2]);
         QVector3D vBC(vs[C*3+0]-vs[B*3+0], vs[C*3+1]-vs[B*3+1], vs[C*3+2]-vs[B*3+2]);
         QVector3D vDC(vs[C*3+0]-vs[D*3+0], vs[C*3+1]-vs[D*3+1], vs[C*3+2]-vs[D*3+2]);
-        QVector3D vCE(vs[E*3+0]-vs[C*3+0], vs[E*3+1]-vs[C*3+1], vs[E*3+2]-vs[C*3+2]);
-        QVector3D vDE(vs[E*3+0]-vs[D*3+0], vs[E*3+1]-vs[D*3+1], vs[E*3+2]-vs[D*3+2]);
 
         //ABC:AB,AC; ABC:AC,CB; ABC:AB,CB;
         QVector3D nACB = QVector3D::normal(vBC, vAB);
@@ -64,7 +60,6 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
         QVector3D nFI  = -nBE;
 
         last=nBCD;
-
 
         GLfloat normals[] = {
             nACB.x(), nACB.y(), nACB.z(),
@@ -91,4 +86,48 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
                 vertData->append(normals[ind_nor[i]*3+j]);
         }
     }
+    GLfloat vs[] = {
+        r1_cyl,     0,    -lar_cyl/2,     //A
+        r2_cyl,     0,    -lar_cyl/2,     //B
+        r1_cyl,     0,    +lar_cyl/2,     //C
+        r2_cyl,     0,    +lar_cyl/2,     //D
+        -r1_cyl,    0,    -lar_cyl/2,     //E
+        -r2_cyl,    0,    -lar_cyl/2,     //F
+        -r1_cyl,    0,    +lar_cyl/2,     //G
+        -r2_cyl,    0,    +lar_cyl/2,     //H
+    };
+
+    int ind_ver[] = { A,B,C, B,C,D, E,F,G, F,G,H, };
+
+    GLdouble colors[] = {
+        color[0]/255., color[1]/255., color[2]/255.,    //couleur générale
+    };
+    //                A,B,C, B,C,D, E,F,G, F,G,H
+    int ind_col[] = { 0,0,0, 0,0,0, 0,0,0, 0,0,0, };
+
+    QVector3D vAB(vs[B*3+0]-vs[A*3+0], vs[B*3+1]-vs[A*3+1], vs[B*3+2]-vs[A*3+2]);
+    QVector3D vAC(vs[C*3+0]-vs[A*3+0], vs[C*3+1]-vs[A*3+1], vs[C*3+2]-vs[A*3+2]);
+
+    QVector3D nACB = QVector3D::normal(vAC, vAB);
+
+    GLfloat normals[] = {
+        nACB.x(), nACB.y(), nACB.z(),
+    };
+    //                A,B,C, B,C,D, E,F,G, F,G,H
+    int ind_nor[] = { 0,0,0, 0,0,0, 0,0,0, 0,0,0, };
+
+
+    for (int i = 0; i < 4*3; ++i) {
+        // coordonnées sommets
+        for (int j = 0; j < 3; j++)
+            vertData->append(vs[ind_ver[i]*3+j]);
+        // couleurs sommets
+        for (int j = 0; j < 3; j++)
+            vertData->append(colors[ind_col[i]*3+j]);
+        // normales sommets
+        for (int j = 0; j < 3; j++)
+            vertData->append(normals[ind_nor[i]*3+j]);
+    }
+
+
 }

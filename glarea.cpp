@@ -74,90 +74,9 @@ void GLArea::makeGLObjects()
 {
     qDebug() << __FUNCTION__ ;
 
-/*
     QVector<GLfloat> vertData;
-    GLfloat alpha = M_PI/c1->nb_fac;
-    int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8;
-    GLfloat r1_cyl=c1->r1_cyl, r2_cyl=c1->r2_cyl, lar_cyl=c1->lar_cyl;
-    for(int i=0;i<2;i++){
-    GLfloat vs[] = {
-        0,                          0,                          -lar_cyl/2,     //A
-        r1_cyl*cos(i*alpha),        r1_cyl*sin(i*alpha),        -lar_cyl/2,     //B
-        r1_cyl*cos((i+1)*alpha),    r1_cyl*sin((i+1)*alpha),    -lar_cyl/2,     //C
-        r1_cyl*cos((i+1)*alpha),    r1_cyl*sin((i+1)*alpha),    +lar_cyl/2,     //D
-        r1_cyl*cos((i+2)*alpha),    r1_cyl*sin((i+2)*alpha),    +lar_cyl/2,     //E
-        r2_cyl*cos(i*alpha),        r2_cyl*sin(i*alpha),        -lar_cyl/2,     //F
-        r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    -lar_cyl/2,     //G
-        r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    +lar_cyl/2,     //H
-        r2_cyl*cos((i+2)*alpha),    r2_cyl*sin((i+2)*alpha),    +lar_cyl/2,     //I
-    };
-    int ind_ver[] = { A,C,B, B,C,D, C,D,E, F,G,H, G,H,I, D,H,I, D,E,I };
-
-    GLdouble colors[] = {
-        c1->color[0]/255., c1->color[1]/255., c1->color[2]/255.,      // triangle 0
-    };
-    int ind_col[] = { 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0};
-
-    QVector3D vAB(vs[B*3+0]-vs[A*3+0], vs[B*3+1]-vs[A*3+1], vs[B*3+2]-vs[A*3+2]);
-    QVector3D vBC(vs[C*3+0]-vs[B*3+0], vs[C*3+1]-vs[B*3+1], vs[C*3+2]-vs[B*3+2]);
-    QVector3D vBD(vs[D*3+0]-vs[B*3+0], vs[D*3+1]-vs[B*3+1], vs[D*3+2]-vs[B*3+2]);
-    QVector3D vCE(vs[E*3+0]-vs[C*3+0], vs[E*3+1]-vs[C*3+1], vs[E*3+2]-vs[C*3+2]);
-    QVector3D vDE(vs[E*3+0]-vs[D*3+0], vs[E*3+1]-vs[D*3+1], vs[E*3+2]-vs[D*3+2]);
-    QVector3D vFH(vs[H*3+0]-vs[F*3+0], vs[H*3+1]-vs[F*3+1], vs[H*3+2]-vs[F*3+2]);
-    QVector3D vGH(vs[H*3+0]-vs[G*3+0], vs[H*3+1]-vs[G*3+1], vs[H*3+2]-vs[G*3+2]);
-    QVector3D vGI(vs[I*3+0]-vs[G*3+0], vs[B*3+1]-vs[G*3+1], vs[I*3+2]-vs[G*3+2]);
-    QVector3D vDI(vs[I*3+0]-vs[D*3+0], vs[B*3+1]-vs[D*3+1], vs[I*3+2]-vs[D*3+2]);
-    QVector3D vDH(vs[H*3+0]-vs[D*3+0], vs[H*3+1]-vs[D*3+1], vs[H*3+2]-vs[D*3+2]);
-
-    //ABC:AB,AC; ABC:AC,CB; ABC:AB,CB;
-    QVector3D nACB = QVector3D::normal(vAB, vBC);
-    QVector3D nBCD = QVector3D::normal(vBC, vBD);
-    QVector3D nCED = QVector3D::normal(vCE, vDE);
-    QVector3D nFHG = QVector3D::normal(vFH, vGH);
-    QVector3D nGHI = QVector3D::normal(vGH, vGI);
-    QVector3D nDIH = QVector3D::normal(vDI, vDH);
-    QVector3D nDEI = QVector3D::normal(vDE, vDI);
-
-#if 1
-    // Normales des triangles
-    GLfloat normals[] = {
-            nACB.x(), nACB.y(), nACB.z(),
-            nBCD.x(), nBCD.y(), nBCD.z(),
-            nCED.x(), nCED.y(), nCED.z(),
-            nFHG.x(), nFHG.y(), nFHG.z(),
-            nGHI.x(), nGHI.y(), nGHI.z(),
-            nDIH.x(), nDIH.y(), nDIH.z(),
-            nDEI.x(), nDEI.y(), nDEI.z(),
-    };
-    int ind_nor[] = { 0,0,0, 1,1,1, 2,2,2, 3,3,3, 4,4,4, 5,5,5, 6,6,6, 7,7,7};
-#else
-    // Pour lissage de Phong
-    QVector3D nAB = (nACB + nABD) / 2.0;
-
-    GLfloat normals[] = { nACB.x(), nACB.y(), nACB.z(),
-                          nABD.x(), nABD.y(), nABD.z(),
-                          nAB.x(), nAB.y(), nAB.z()};
-                   // A  C  B  A  B  D
-    int ind_nor[] = { 2, 0, 2, 2, 2, 1 };
-#endif
-
-    for (int i = 0; i < 7*3; ++i) {
-        // coordonnées sommets
-        for (int j = 0; j < 3; j++)
-            vertData.append(vs[ind_ver[i]*3+j]);
-        // couleurs sommets
-        for (int j = 0; j < 3; j++)
-            vertData.append(colors[ind_col[i]*3+j]);
-        // normales sommets
-        for (int j = 0; j < 3; j++)
-            vertData.append(normals[ind_nor[i]*3+j]);
-    }
-}
-*/
-
-    qDebug() << "yolo" <<nb_triangles;
-    QVector<GLfloat> vertData;
-    c1->construire_demiCylindre(&vertData);
+    dc1->construire_demiCylindre(&vertData);nb_triangles= dc1->nb_triangles;
+    c1->construire_Cylindre(&vertData);nb_triangles += c1->nb_triangles;
 
     m_vbo.create();
     m_vbo.bind();
@@ -220,8 +139,11 @@ void GLArea::paintGL()
     m_program->enableAttributeArray("posAttr");
     m_program->enableAttributeArray("colAttr");
     m_program->enableAttributeArray("norAttr");
+    int decal=0;
 
-    glDrawArrays(GL_TRIANGLES, 0, nb_triangles*3);
+    glDrawArrays(GL_TRIANGLES, decal, dc1->nb_triangles*3);decal +=dc1->nb_triangles*3;
+    world_mat.translate(0,0,2.0);
+    glDrawArrays(GL_TRIANGLES, decal, c1->nb_triangles*3);decal +=c1->nb_triangles*3;
 
     m_program->disableAttributeArray("posAttr");
     m_program->disableAttributeArray("colAttr");
