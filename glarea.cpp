@@ -142,7 +142,28 @@ void GLArea::paintGL()
     int decal=0;
 
     glDrawArrays(GL_TRIANGLES, decal, dc1->nb_triangles*3);decal +=dc1->nb_triangles*3;
-    world_mat.translate(0,0,2.0);
+
+    m_program->disableAttributeArray("posAttr");
+    m_program->disableAttributeArray("colAttr");
+    m_program->disableAttributeArray("norAttr");
+
+
+    world_mat.translate(0,0,-0.8001);
+
+    m_program->setUniformValue("projMatrix", proj_mat);
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+
+    m_program->setAttributeBuffer("posAttr",
+        GL_FLOAT, 0 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
+    m_program->setAttributeBuffer("colAttr",
+        GL_FLOAT, 3 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
+    m_program->setAttributeBuffer("norAttr",
+        GL_FLOAT, 6 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
+    m_program->enableAttributeArray("posAttr");
+    m_program->enableAttributeArray("colAttr");
+    m_program->enableAttributeArray("norAttr");
+
     glDrawArrays(GL_TRIANGLES, decal, c1->nb_triangles*3);decal +=c1->nb_triangles*3;
 
     m_program->disableAttributeArray("posAttr");
