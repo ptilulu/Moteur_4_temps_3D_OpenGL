@@ -13,20 +13,20 @@ LIBS += -lGLU32\
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TP4
+TARGET = tp4
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        princ.cpp \
-        glarea.cpp \
-        cylindre.cpp
+SOURCES += main.cpp \
+        princ.cpp   \
+        glarea.cpp  \
+        demicylindre.cpp
 
 HEADERS  += princ.h \
-        glarea.h \
-         cylindre.h
+        glarea.h    \
+        demicylindre.h
 
 FORMS    += princ.ui
 
 RESOURCES += \
-    TP4S.qrc
+    tp4.qrc

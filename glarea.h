@@ -7,9 +7,9 @@
 #include <QTimer>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
-#include <QVector>
-#include "cylindre.h"
+#include "demicylindre.h"
 
 class GLArea : public QOpenGLWidget,
                protected QOpenGLFunctions
@@ -40,35 +40,29 @@ protected:
     void mousePressEvent(QMouseEvent *ev) override;
     void mouseReleaseEvent(QMouseEvent *ev) override;
     void mouseMoveEvent(QMouseEvent *ev) override;
-    void drawCylindre(Cylindre *c, QMatrix4x4 matrix);
 
 private:
-    double m_angle = 0;
+
+    double m_angleX = 0;
+    double m_angleY = 0;
+    double m_angleZ = 0;
+    double m_x = 0;
+    double m_y = 0;
+    double m_z = 0;
     QTimer *m_timer = nullptr;
-    float m_anim = 0;
+    double m_anim = 0;
     double m_radius = 0.5;
     double m_ratio = 1;
-    float  m_x = 0;
-    float  m_y = 0;
-    float  m_z = 0;
 
+    DemiCylindre *c1 =new DemiCylindre (0.8, 0.1 , 1   , 20 , 255, 0  , 0  );
 
-    // Pour utiliser les shaders
+    GLint nb_triangles= c1->tf*c1->nb_fac;
+
     QOpenGLShaderProgram *m_program;
-    int m_posAttr;
-    int m_colAttr;
-    int m_matrixUniform;
 
-    Cylindre *c1 =new Cylindre (0.25, 1   , 20 , 255, 0  , 0  );
-    Cylindre *c2 =new Cylindre (1.4 , 0.08, 8  , 255, 255, 255);
-    Cylindre *c3 =new Cylindre (0.8 , 0.06, 6  , 0  , 255, 255);
-    Cylindre *c4 =new Cylindre (0.2 , 0.3 , 10 , 120, 0  , 255);
-    Cylindre *c5 =new Cylindre (0.2 , 0.3 , 10 , 120, 0  , 255);
-    Cylindre *c6 =new Cylindre (0.2 , 0.2 , 20 , 0  , 0  , 255);
-    Cylindre *c7 =new Cylindre (0.7 , 0.04, 6  , 255, 255, 0  );
-    Cylindre *c8 =new Cylindre (2   , 0.14, 4  , 120, 0  , 255);
-    Cylindre *c9 =new Cylindre (2   , 0.14, 4  , 0  , 0  , 255);
-    Cylindre *c10 =new Cylindre(2   , 0.3 , 4  , 0  , 120, 255);
+    void makeGLObjects();
+    void tearGLObjects();
+    QOpenGLBuffer m_vbo;
 };
 
 #endif // GLAREA_H
