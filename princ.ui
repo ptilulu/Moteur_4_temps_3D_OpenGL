@@ -33,6 +33,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="MoteurButton">
+          <property name="text">
+           <string>Moteur</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btn_quit">
           <property name="text">
            <string>Quit</string>
@@ -62,7 +69,7 @@
      <x>0</x>
      <y>0</y>
      <width>405</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

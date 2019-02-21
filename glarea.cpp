@@ -30,7 +30,10 @@ GLArea::GLArea(QWidget *parent) :
     m_timer->setInterval(12);  // msec
     connect (m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect (this, SIGNAL(radiusChanged(double)), this, SLOT(setRadius(double)));
+
 }
+
+
 
 GLArea::~GLArea()
 {

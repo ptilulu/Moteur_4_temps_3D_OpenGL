@@ -12,11 +12,19 @@ class Princ : public QMainWindow, private Ui::Princ
 public:
     explicit Princ(QWidget *parent = 0);
 
+
+
 public slots:
     void setSliderRadius(double radius);
+    void paramStartButton();
+    void paramStopButton();
+    void paramSliderChanged(int value);
 
 protected slots:
     void onSliderRadius(int value);
+
+private slots:
+    void on_MoteurButton_clicked();
 };
 
 #endif // PRINC_H

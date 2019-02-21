@@ -24,6 +24,7 @@ public:
 public slots:
     void setRadius(double radius);
 
+
 signals:  // On ne les implémente pas, elles seront générées par MOC ;
           // les paramètres seront passés aux slots connectés.
     void radiusChanged(double newRadius);
@@ -41,6 +42,8 @@ protected:
     void mousePressEvent(QMouseEvent *ev) override;
     void mouseReleaseEvent(QMouseEvent *ev) override;
     void mouseMoveEvent(QMouseEvent *ev) override;
+public :
+    QTimer *m_timer = nullptr;
 
 private:
 /*
@@ -59,7 +62,6 @@ private:
     double m_angleZ = 0;
 
 
-    QTimer *m_timer = nullptr;
     int m_anim = 0;
     double m_radius = 0.5;
     double m_ratio = 1;

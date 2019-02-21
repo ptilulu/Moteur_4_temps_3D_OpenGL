@@ -21,14 +21,17 @@ SOURCES += main.cpp \
         princ.cpp   \
         glarea.cpp  \
         demicylindre.cpp \
-    cylindre.cpp
+    cylindre.cpp \
+    param.cpp
 
 HEADERS  += princ.h \
         glarea.h    \
         demicylindre.h \
-    cylindre.h
+    cylindre.h \
+    param.h
 
-FORMS    += princ.ui
+FORMS    += princ.ui \
+    param.ui
 
 RESOURCES += \
     tp4.qrc
