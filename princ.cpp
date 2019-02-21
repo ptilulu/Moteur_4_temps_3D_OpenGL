@@ -2,6 +2,7 @@
 
 #include "princ.h"
 #include "param.h"
+#include "aidebutton.h"
 #include <QDebug>
 
 Princ::Princ(QWidget *parent) :
@@ -58,4 +59,13 @@ void Princ::on_MoteurButton_clicked()
 
     }
 
+}
+
+void Princ::on_actionCommandes_triggered()
+{
+    AideButton aideB;
+
+    if(aideB.exec()){
+
+    }
 }

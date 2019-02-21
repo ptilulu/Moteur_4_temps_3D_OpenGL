@@ -25,6 +25,7 @@ protected slots:
 
 private slots:
     void on_MoteurButton_clicked();
+    void on_actionCommandes_triggered();
 };
 
 #endif // PRINC_H

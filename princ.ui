@@ -72,7 +72,19 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuCommandes">
+    <property name="title">
+     <string>à propos</string>
+    </property>
+    <addaction name="actionCommandes"/>
+   </widget>
+   <addaction name="menuCommandes"/>
   </widget>
+  <action name="actionCommandes">
+   <property name="text">
+    <string>Commandes</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

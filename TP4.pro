@@ -22,16 +22,19 @@ SOURCES += main.cpp \
         glarea.cpp  \
         demicylindre.cpp \
     cylindre.cpp \
-    param.cpp
+    param.cpp \
+    aidebutton.cpp
 
 HEADERS  += princ.h \
         glarea.h    \
         demicylindre.h \
     cylindre.h \
-    param.h
+    param.h \
+    aidebutton.h
 
 FORMS    += princ.ui \
-    param.ui
+    param.ui \
+    aidebutton.ui
 
 RESOURCES += \
     tp4.qrc
