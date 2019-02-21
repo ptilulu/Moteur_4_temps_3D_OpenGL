@@ -152,7 +152,6 @@ void GLArea::paintGL()
 
     QMatrix4x4 base_world_mat=world_mat;
 
-
     world_mat.rotate(m_anim,0,0,1);
     double d_z=0;      //décalage incrémenté du vilbrequin
     double t_x1=0.3;   //espacement des masses
@@ -493,16 +492,11 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
             value = m_timer->interval();
             value = value*10000;
             if (ev->text() == "a"){
-                qDebug() << "petit a" << value;
                 value=value*1.1f;
-                qDebug() << "petit a" << value;
                 m_timer->setInterval(value/10000+1);
             }
             else {
-                qDebug() << "grand a" <<value;
-                value=value*0.9f;
-                value++;
-                qDebug() << "grand a" <<value;
+                value=value*0.8f;
                 m_timer->setInterval(value/10000);
             }
             break;

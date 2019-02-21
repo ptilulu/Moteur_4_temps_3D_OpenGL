@@ -21,7 +21,7 @@ void DemiCylindre::setColor(int r, int v, int b){
 
 void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
     GLfloat alpha = M_PI/nb_fac;
-    int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,sF=9,sG=10;
+    int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,sF=9,sG=10,Y=11,Z=12;
     QVector3D last;
     GLfloat space=0.001;
     for (int i=0;i<nb_fac;i++){
@@ -37,7 +37,8 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
             r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    +lar_cyl/2,     //I
             r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    -lar_cyl/2+space,     //F'
             r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    -lar_cyl/2+space,     //G'
-
+            r1_cyl*cos((i-1)*alpha),    r1_cyl*sin((i-1)*alpha),    -lar_cyl/2,     //Y
+            r1_cyl*cos((i+2)*alpha),    r1_cyl*sin((i+2)*alpha),    -lar_cyl/2,     //Z
         };
         int ind_ver[] = { A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I, A,sF,sG};
 
@@ -53,20 +54,23 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
         QVector3D vBC(vs[C*3+0]-vs[B*3+0], vs[C*3+1]-vs[B*3+1], vs[C*3+2]-vs[B*3+2]);
         QVector3D vDC(vs[C*3+0]-vs[D*3+0], vs[C*3+1]-vs[D*3+1], vs[C*3+2]-vs[D*3+2]);
 
+        QVector3D vBE(vs[E*3+0]-vs[B*3+0], vs[E*3+1]-vs[B*3+1], vs[E*3+2]-vs[B*3+2]);
+        QVector3D vBY(vs[Y*3+0]-vs[B*3+0], vs[Y*3+1]-vs[B*3+1], vs[Y*3+2]-vs[B*3+2]);
+        QVector3D vDZ(vs[Z*3+0]-vs[D*3+0], vs[Z*3+1]-vs[D*3+1], vs[Z*3+2]-vs[D*3+2]);
+
         //ABC:AB,AC; ABC:AC,CB; ABC:AB,CB;
         QVector3D nACB = QVector3D::normal(vBC, vAB);
         QVector3D nBCD = QVector3D::normal(vDC, vBC);
         QVector3D nFHG = -nBCD;
         QVector3D nDIH = -nACB;
 
-        if(i==0){
-            last=nBCD;
-        }
+        QVector3D nBEY = QVector3D::normal(vBE, vBY);
+        QVector3D nDCZ = QVector3D::normal(vDC, vDZ);
 
-        QVector3D nBE  = (last+nBCD)/2;
+        QVector3D nBE  = (nBEY+nBCD)/2;
+        QVector3D nDC  = (nDCZ+nBCD)/2;
         QVector3D nFI  = -nBE;
-
-        last=nBCD;
+        QVector3D nGH  = -nDC;
 
         GLfloat normals[] = {
             nACB.x(), nACB.y(), nACB.z(),   //n1
@@ -74,16 +78,18 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
             nFHG.x(), nFHG.y(), nFHG.z(),   //n3
             nDIH.x(), nDIH.y(), nDIH.z(),   //n4
             nBE.x() , nBE.y() , nBE.z() ,   //n5
-            nFI.x() , nFI.y() , nFI.z() ,   //n6
+            nDC.x() , nDC.y() , nDC.z() ,   //n6
+            nFI.x() , nFI.y() , nFI.z() ,   //n7
+            nGH.x() , nGH.y() , nGH.z() ,   //n8
         };
         //                  A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I, A,sF,sG
         //int ind_nor[] = { 0,0,0, 1,1,1, 1,1,1, 2,2,2, 2,2,2, 3,3,3, 3,3,3, 3,3,3,};
         //int ind_nor[] = { 0,0,0, 4,1,1, 4,1,4, 5,2,2, 5,2,5, 3,3,3, 3,3,3, 3,3,3,};
 
-        int n1=0,n2=1,n3=2,n4=3,n5=4,n6=5;
-        if(!lissage){n5=n2;n6=n3;}
+        int n1=0,n2=1,n3=2,n4=3,n5=4,n6=5,n7=6,n8=7;
+        if(!lissage){n5=n2;n6=n2;n7=n3;n8=n3;}
         //                A, B, C,  B, C, D,  B, D, E,  F, G, H,  F, H, I,  D, H, I,  D, E, I,  A, sF,sG
-        int ind_nor[] = { n1,n1,n1, n5,n2,n2, n5,n2,n5, n6,n3,n3, n6,n3,n6, n4,n4,n4, n4,n4,n4, n4,n4,n4,};
+        int ind_nor[] = { n1,n1,n1, n5,n6,n6, n5,n6,n5, n7,n8,n8, n7,n8,n7, n4,n4,n4, n4,n4,n4, n4,n4,n4,};
 
         for (int i = 0; i < tf*3; ++i) {
             // coordonnées sommets
