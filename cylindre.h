@@ -14,10 +14,12 @@ public:
     GLint nb_fac;   // nombre de facettes
     GLint tf=(1+2+1); //triangle d'une face
     GLint nb_triangles;
+    GLint start;
+    boolean lissage;
 
     GLint color[3]; // RVB
 public:
-    Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r=255, int v=255, int b=255);
+    Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r=255, int v=255, int b=255, boolean lissage=true);
     void setColor(int r, int v, int b);
     void construire_Cylindre(QVector<GLfloat> * vertData);
 };

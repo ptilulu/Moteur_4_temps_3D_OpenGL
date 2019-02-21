@@ -1,6 +1,6 @@
 #include "demicylindre.h"
 
-DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat ep_cyl, GLfloat r_cyl, GLint nb_fac,int r, int v, int b)
+DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat r_cyl, GLfloat ep_cyl, GLint nb_fac,int r, int v, int b, boolean lissage)
 {
     this->lar_cyl = lar_cyl;    // profondeur du cylindre
     this->ep_cyl = ep_cyl;      // epaisseur du cylindre
@@ -8,6 +8,8 @@ DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat ep_cyl, GLfloat r_cyl, GLint
     this->r2_cyl = r_cyl-ep_cyl;// rayon interieur
     this->nb_fac = nb_fac;      // nombre de facettes
     this->nb_triangles=(tf*nb_fac+tb);
+    this->lissage = lissage;
+    this->red=0;
     this->setColor(r,v,b);
 }
 
@@ -19,28 +21,33 @@ void DemiCylindre::setColor(int r, int v, int b){
 
 void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
     GLfloat alpha = M_PI/nb_fac;
-    int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8;
+    int A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,sF=9,sG=10;
     QVector3D last;
+    GLfloat space=0.001;
     for (int i=0;i<nb_fac;i++){
         GLfloat vs[] = {
             0,                          0,                          -lar_cyl/2,     //A
             r1_cyl*cos((i+0)*alpha),    r1_cyl*sin((i+0)*alpha),    -lar_cyl/2,     //B
             r1_cyl*cos((i+1)*alpha),    r1_cyl*sin((i+1)*alpha),    -lar_cyl/2,     //C
             r1_cyl*cos((i+1)*alpha),    r1_cyl*sin((i+1)*alpha),    +lar_cyl/2,     //D
-            r1_cyl*cos((i+0)*alpha),    r1_cyl*sin((i+0)*alpha),    +lar_cyl/2,     //E*
+            r1_cyl*cos((i+0)*alpha),    r1_cyl*sin((i+0)*alpha),    +lar_cyl/2,     //E
             r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    -lar_cyl/2,     //F
             r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    -lar_cyl/2,     //G
             r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    +lar_cyl/2,     //H
-            r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    +lar_cyl/2,     //I*
+            r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    +lar_cyl/2,     //I
+            r2_cyl*cos((i+0)*alpha),    r2_cyl*sin((i+0)*alpha),    -lar_cyl/2+space,     //F'
+            r2_cyl*cos((i+1)*alpha),    r2_cyl*sin((i+1)*alpha),    -lar_cyl/2+space,     //G'
+
         };
-        int ind_ver[] = { A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I };
+        int ind_ver[] = { A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I, A,sF,sG};
 
         GLdouble colors[] = {
-            color[0]/255., color[1]/255., color[2]/255.,    //couleur générale
-            color[0]/255.+0.5, color[1]/255.+0.5, color[2]/255.+0.5,    //couleur en A
+            color[0]/255., color[1]/255., color[2]/255.,                //couleur générale
+            color[0]/255.-0.1, color[1]/255.-0.1, color[2]/255.-0.1,    //couleur en A
+            color[0]/255., color[1]/255.*(1-red), color[2]/255.*(1-red),      //couleur en AFG
         };
-        //                A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I
-        int ind_col[] = { 1,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0 };
+        //                A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I, A,sF,sG
+        int ind_col[] = { 1,0,0, 0,0,0, 0,0,0, 2,2,0, 2,0,0, 0,0,0, 0,0,0, 2,2,2};
 
         QVector3D vAB(vs[B*3+0]-vs[A*3+0], vs[B*3+1]-vs[A*3+1], vs[B*3+2]-vs[A*3+2]);
         QVector3D vBC(vs[C*3+0]-vs[B*3+0], vs[C*3+1]-vs[B*3+1], vs[C*3+2]-vs[B*3+2]);
@@ -62,19 +69,23 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
         last=nBCD;
 
         GLfloat normals[] = {
-            nACB.x(), nACB.y(), nACB.z(),
-            nBCD.x(), nBCD.y(), nBCD.z(),
-            nFHG.x(), nFHG.y(), nFHG.z(),
-            nDIH.x(), nDIH.y(), nDIH.z(),
-            nBE.x() , nBE.y() , nBE.z() ,
-            nFI.x() , nFI.y() , nFI.z() ,
+            nACB.x(), nACB.y(), nACB.z(),   //n1
+            nBCD.x(), nBCD.y(), nBCD.z(),   //n2
+            nFHG.x(), nFHG.y(), nFHG.z(),   //n3
+            nDIH.x(), nDIH.y(), nDIH.z(),   //n4
+            nBE.x() , nBE.y() , nBE.z() ,   //n5
+            nFI.x() , nFI.y() , nFI.z() ,   //n6
         };
-        //                A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I
+        //                  A,B,C, B,C,D, B,D,E, F,G,H, F,H,I, D,H,I, D,E,I, A,sF,sG
+        //int ind_nor[] = { 0,0,0, 1,1,1, 1,1,1, 2,2,2, 2,2,2, 3,3,3, 3,3,3, 3,3,3,};
+        //int ind_nor[] = { 0,0,0, 4,1,1, 4,1,4, 5,2,2, 5,2,5, 3,3,3, 3,3,3, 3,3,3,};
 
-      //int ind_nor[] = { 0,0,0, 1,1,1, 1,1,1, 2,2,2, 2,2,2, 3,3,3, 3,3,3,};
-        int ind_nor[] = { 0,0,0, 4,1,1, 4,1,4, 5,2,2, 5,2,5, 3,3,3, 3,3,3,};
+        int n1=0,n2=1,n3=2,n4=3,n5=4,n6=5;
+        if(!lissage){n5=n2;n6=n3;}
+        //                A, B, C,  B, C, D,  B, D, E,  F, G, H,  F, H, I,  D, H, I,  D, E, I,  A, sF,sG
+        int ind_nor[] = { n1,n1,n1, n5,n2,n2, n5,n2,n5, n6,n3,n3, n6,n3,n6, n4,n4,n4, n4,n4,n4, n4,n4,n4,};
 
-        for (int i = 0; i < 7*3; ++i) {
+        for (int i = 0; i < tf*3; ++i) {
             // coordonnées sommets
             for (int j = 0; j < 3; j++)
                 vertData->append(vs[ind_ver[i]*3+j]);
@@ -117,7 +128,7 @@ void DemiCylindre::construire_demiCylindre(QVector<GLfloat> * vertData){
     int ind_nor[] = { 0,0,0, 0,0,0, 0,0,0, 0,0,0, };
 
 
-    for (int i = 0; i < 4*3; ++i) {
+    for (int i = 0; i < tb*3; ++i) {
         // coordonnées sommets
         for (int j = 0; j < 3; j++)
             vertData->append(vs[ind_ver[i]*3+j]);

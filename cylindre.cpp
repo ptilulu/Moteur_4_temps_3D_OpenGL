@@ -1,11 +1,12 @@
 #include "cylindre.h"
 
-Cylindre::Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r, int v, int b)
+Cylindre::Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r, int v, int b, boolean lissage)
 {
     this->lar_cyl = lar_cyl;    // profondeur du cylindre
     this->r_cyl = r_cyl;       // rayon
     this->nb_fac = nb_fac;      // nombre de facettes
     this->nb_triangles=(tf*nb_fac);
+    this->lissage = lissage;
     this->setColor(r,v,b);
 }
 
@@ -31,8 +32,8 @@ void Cylindre::construire_Cylindre(QVector<GLfloat> * vertData){
         int ind_ver[] = { A,B,C, B,C,D, B,D,E, D,E,F };
 
         GLdouble colors[] = {
-            color[0]/255., color[1]/255., color[2]/255.,    //couleur générale
-            color[0]/255.+0.5, color[1]/255.+0.5, color[2]/255.+0.5,    //couleur en A et F
+            color[0]/255., color[1]/255., color[2]/255.,                //couleur générale
+            color[0]/255.-0.1, color[1]/255.-0.1, color[2]/255.-0.1,    //couleur en A et F
         };
         //                A,B,C, B,C,D, B,D,E, D,E,F
         int ind_col[] = { 1,0,0, 0,0,0, 0,0,0, 0,0,1, };
@@ -55,17 +56,21 @@ void Cylindre::construire_Cylindre(QVector<GLfloat> * vertData){
         last=nBCD;
 
         GLfloat normals[] = {
-            nACB.x(), nACB.y(), nACB.z(),
-            nBCD.x(), nBCD.y(), nBCD.z(),
-            nDEF.x(), nDEF.y(), nDEF.z(),
-            nBE.x() , nBE.y() , nBE.z() ,
+            nACB.x(), nACB.y(), nACB.z(),   //n1
+            nBCD.x(), nBCD.y(), nBCD.z(),   //n2
+            nDEF.x(), nDEF.y(), nDEF.z(),   //n3
+            nBE.x() , nBE.y() , nBE.z() ,   //n4
         };
-        //                A,B,C, B,C,D, B,D,E, D,E,F
+        //                  A,B,C, B,C,D, B,D,E, D,E,F
+        //int ind_nor[] = { 0,0,0, 1,1,1, 1,1,1, 2,2,2, };
+        //int ind_nor[] = { 0,0,0, 3,1,1, 3,1,3, 2,2,2, };
 
-      //int ind_nor[] = { 0,0,0, 1,1,1, 1,1,1, 2,2,2, };
-      int ind_nor[] = { 0,0,0, 3,1,1, 3,1,3, 2,2,2, };
+        int n1=0,n2=1,n3=2,n4=3;
+        if(!lissage){n4=n2;}
+        //                A, B, C,  B, C, D,  B, D, E,  D, E, F
+        int ind_nor[] = { n1,n1,n1, n4,n2,n2, n4,n2,n4, n3,n3,n3, };
 
-        for (int i = 0; i < 4*3; ++i) {
+        for (int i = 0; i < tf*3; ++i) {
             // coordonnées sommets
             for (int j = 0; j < 3; j++)
                 vertData->append(vs[ind_ver[i]*3+j]);

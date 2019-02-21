@@ -43,21 +43,38 @@ protected:
     void mouseMoveEvent(QMouseEvent *ev) override;
 
 private:
-
-    double m_angleX = 0;
-    double m_angleY = 0;
-    double m_angleZ = 0;
+/*
     double m_x = 0;
     double m_y = 0;
     double m_z = 0;
+    double m_angleX = 0;
+    double m_angleY = 0;
+    double m_angleZ = 0;
+*/
+    double m_x = 1.3;
+    double m_y = 2.3;
+    double m_z = -4;
+    double m_angleX = 45;
+    double m_angleY = 135;
+    double m_angleZ = 0;
+
+
     QTimer *m_timer = nullptr;
-    double m_anim = 0;
+    int m_anim = 0;
     double m_radius = 0.5;
     double m_ratio = 1;
 
-    DemiCylindre *dc1   = new DemiCylindre  (0.8, 0.1 , 1   , 20 , 255, 0  , 0  );
-    Cylindre *c1        = new Cylindre      (0.8, 1   , 20 , 255, 255, 0  );
-    GLint nb_triangles;
+    DemiCylindre *dc1   = new DemiCylindre  (2  , 0.5, 0.1, 20, 230, 240, 255);
+    DemiCylindre *dc2   = new DemiCylindre  (2  , 0.5, 0.1, 20, 230, 240, 255);
+
+    Cylindre *c1        = new Cylindre      (0.7, 0.1,      40, 180, 200, 200);
+    Cylindre *c2        = new Cylindre      (0.3, 0.1,      40, 180, 200, 200);
+    Cylindre *c3        = new Cylindre      (0.8, 0.15,     4 ,  90, 100, 100, false);
+    Cylindre *c4        = new Cylindre      (0.2, 2  ,      20, 120, 130, 130, false);
+    Cylindre *c5        = new Cylindre      (2  , 0.1,      40, 240, 250, 250);
+    Cylindre *c6        = new Cylindre      (0.8, 0.4 ,     40,  50,  60,  60);
+
+    int  red_location=2;
 
     QOpenGLShaderProgram *m_program;
 

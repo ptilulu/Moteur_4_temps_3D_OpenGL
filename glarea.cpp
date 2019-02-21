@@ -27,7 +27,7 @@ GLArea::GLArea(QWidget *parent) :
     setFocus();                      // donne le focus
 
     m_timer = new QTimer(this);
-    m_timer->setInterval(42);  // msec
+    m_timer->setInterval(12);  // msec
     connect (m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect (this, SIGNAL(radiusChanged(double)), this, SLOT(setRadius(double)));
 }
@@ -75,8 +75,16 @@ void GLArea::makeGLObjects()
     qDebug() << __FUNCTION__ ;
 
     QVector<GLfloat> vertData;
-    dc1->construire_demiCylindre(&vertData);nb_triangles= dc1->nb_triangles;
-    c1->construire_Cylindre(&vertData);nb_triangles += c1->nb_triangles;
+    int decal=0;
+    c1->construire_Cylindre(&vertData);     c1->start=decal;    decal+=c1->nb_triangles*3;
+    c2->construire_Cylindre(&vertData);     c2->start=decal;    decal+=c2->nb_triangles*3;
+    c3->construire_Cylindre(&vertData);     c3->start=decal;    decal+=c3->nb_triangles*3;
+    c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;
+    c5->construire_Cylindre(&vertData);     c5->start=decal;    decal+=c5->nb_triangles*3;
+    c6->construire_Cylindre(&vertData);     c6->start=decal;    decal+=c6->nb_triangles*3;
+    dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;
+    dc2->red=1.0;
+    dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;
 
     m_vbo.create();
     m_vbo.bind();
@@ -111,7 +119,7 @@ void GLArea::paintGL()
 
     QMatrix4x4 proj_mat;
     GLfloat hr = m_radius, wr = hr * m_ratio;
-    proj_mat.frustum(-wr, wr, -hr, hr, 1.0, 10.0);
+    proj_mat.frustum(-wr, wr, -hr, hr, 1.0, 40.0);
 
     QMatrix4x4 cam_mat;
     cam_mat.translate(0, 0, -3.0);
@@ -119,7 +127,6 @@ void GLArea::paintGL()
 
     QMatrix4x4 world_mat;
     world_mat.translate(m_x,m_y,m_z);
-
     world_mat.rotate(m_angleX, 1, 0, 0);
     world_mat.rotate(m_angleY, 0, 1, 0);
     world_mat.rotate(m_angleZ, 0, 0, 1);
@@ -139,18 +146,321 @@ void GLArea::paintGL()
     m_program->enableAttributeArray("posAttr");
     m_program->enableAttributeArray("colAttr");
     m_program->enableAttributeArray("norAttr");
-    int decal=0;
 
-    glDrawArrays(GL_TRIANGLES, decal, dc1->nb_triangles*3);decal +=dc1->nb_triangles*3;
+    QMatrix4x4 base_world_mat=world_mat;
 
 
-    world_mat.translate(0,0,-0.8001);
-
+    world_mat.rotate(m_anim,0,0,1);
+    double d_z=0;      //décalage incrémenté du vilbrequin
+    double t_x1=0.3;   //espacement des masses
+    double t_x2=0.6;   //espacement de maneton
+    double z_maneton_1,z_maneton_2,z_maneton_3,z_maneton_4;
+    normal_mat = world_mat.normalMatrix();
     m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    QMatrix4x4 base_vilbrequin_mat=world_mat;
+    glDrawArrays(GL_TRIANGLES, c1->start, c1->nb_triangles*3);
+    d_z-=0.45; //tourillon 1
+
+    world_mat.translate(t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 1 (gros pavé gris foncé)
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(t_x2,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    z_maneton_1=d_z;
+    d_z-=0.25;  //maneton 1
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25; //masse 2
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    d_z-=0.25;  //tourillon 2
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 3
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x2,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    z_maneton_2=d_z;
+    d_z-=0.25;  //maneton 2
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 4
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    d_z-=0.25;  //tourillon 3
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 5
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x2,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    z_maneton_3=d_z;
+    d_z-=0.25;  //maneton 3
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(-t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 6
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    d_z-=0.25;  //tourillon 4
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.25;  //masse 7
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(t_x2,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c2->start, c2->nb_triangles*3);
+    z_maneton_4=d_z;
+    d_z-=0.25;  //maneton 4
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(t_x1,0,d_z);
+    world_mat.rotate(45,1,0,0);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c3->start, c3->nb_triangles*3);
+    d_z-=0.45;  //masse 8
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c1->start, c1->nb_triangles*3);
+    d_z-=0.45; //tourillon 5
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c4->start, c4->nb_triangles*3);//cylindre vilbrequin
 
 
+    double alpha1=(m_anim*M_PI/180);
+    double alpha2=alpha1+M_PI; if(alpha2>=2*M_PI){alpha2=alpha1-M_PI;}
+    double taille_bielle=2;
+    double h_1 = t_x2*sin(alpha1);
+    double h_2 = t_x2*sin(alpha2);
+    double x_piston_1 = t_x2*cos(alpha1)-sqrt(pow(taille_bielle,2)-pow(h_1,2));
+    double x_piston_2 = t_x2*cos(alpha2)-sqrt(pow(taille_bielle,2)-pow(h_2,2));
 
-    glDrawArrays(GL_TRIANGLES, decal, c1->nb_triangles*3);decal +=c1->nb_triangles*3;
+    double beta1=asin(h_1/taille_bielle);//if(alpha1>=M_PI){beta1=-beta1;}
+    double beta2=asin(h_2/taille_bielle);//if(alpha2>=M_PI){beta2=-beta2;}
+    beta1=beta1*180/M_PI;
+    beta2=beta2*180/M_PI;
+
+
+    world_mat=base_world_mat;
+    world_mat.translate((x_piston_1+t_x2*cos(alpha1))/2,h_1/2,z_maneton_1);
+    world_mat.rotate(90,0,1,0);
+    world_mat.rotate(-beta1,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c5->start, c5->nb_triangles*3);
+    //bielle 1
+
+    world_mat=base_world_mat;
+    world_mat.translate((x_piston_2+t_x2*cos(alpha2))/2,h_2/2,z_maneton_2);
+    world_mat.rotate(90,0,1,0);
+    world_mat.rotate(-beta2,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c5->start, c5->nb_triangles*3);
+    //bielle 2
+
+    world_mat=base_world_mat;
+    world_mat.translate((x_piston_2+t_x2*cos(alpha2))/2,h_2/2,z_maneton_3);
+    world_mat.rotate(90,0,1,0);
+    world_mat.rotate(-beta2,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c5->start, c5->nb_triangles*3);
+    //bielle 3
+
+    world_mat=base_world_mat;
+    world_mat.translate((x_piston_1+t_x2*cos(alpha1))/2,h_1/2,z_maneton_4);
+    world_mat.rotate(90,0,1,0);
+    world_mat.rotate(-beta1,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c5->start, c5->nb_triangles*3);
+    //bielle 4
+
+    world_mat=base_world_mat;
+    world_mat.translate(x_piston_1-0.4,0,z_maneton_1);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c6->start, c6->nb_triangles*3);
+    //piston 1
+
+    world_mat=base_world_mat;
+    world_mat.translate(x_piston_2-0.4,0,z_maneton_2);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c6->start, c6->nb_triangles*3);
+    //piston 2
+
+    world_mat=base_world_mat;
+    world_mat.translate(x_piston_2-0.4,0,z_maneton_3);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c6->start, c6->nb_triangles*3);
+    //piston 3
+
+    world_mat=base_world_mat;
+    world_mat.translate(x_piston_1-0.4,0,z_maneton_4);
+    world_mat.rotate(90,0,1,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c6->start, c6->nb_triangles*3);
+    //piston 4
+
+
+    world_mat=base_world_mat;
+    world_mat.translate(0.2-t_x2-taille_bielle-0.01,0,z_maneton_1);
+    world_mat.rotate(-90,0,1,0);
+    world_mat.rotate(180,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    if(red_location==1){
+        glDrawArrays(GL_TRIANGLES, dc2->start, dc2->nb_triangles*3);
+    }else{
+        glDrawArrays(GL_TRIANGLES, dc1->start, dc1->nb_triangles*3);
+    }
+    //chambre 1
+
+    world_mat=base_world_mat;
+    world_mat.translate(0.2-t_x2-taille_bielle-0.01,0,z_maneton_2);
+    world_mat.rotate(-90,0,1,0);
+    world_mat.rotate(180,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    if(red_location==2){
+        glDrawArrays(GL_TRIANGLES, dc2->start, dc2->nb_triangles*3);
+    }else{
+        glDrawArrays(GL_TRIANGLES, dc1->start, dc1->nb_triangles*3);
+    }
+    //chambre 2
+
+    world_mat=base_world_mat;
+    world_mat.translate(0.2-t_x2-taille_bielle-0.01,0,z_maneton_3);
+    world_mat.rotate(-90,0,1,0);
+    world_mat.rotate(180,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    if(red_location==3){
+        glDrawArrays(GL_TRIANGLES, dc2->start, dc2->nb_triangles*3);
+    }else{
+        glDrawArrays(GL_TRIANGLES, dc1->start, dc1->nb_triangles*3);
+    }//chambre 3
+
+    world_mat=base_world_mat;
+    world_mat.translate(0.2-t_x2-taille_bielle-0.01,0,z_maneton_4);
+    world_mat.rotate(-90,0,1,0);
+    world_mat.rotate(180,1,0,0);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    if(red_location==4){
+        glDrawArrays(GL_TRIANGLES, dc2->start, dc2->nb_triangles*3);
+    }else{
+        glDrawArrays(GL_TRIANGLES, dc1->start, dc1->nb_triangles*3);
+    }//chambre 4
 
     m_program->disableAttributeArray("posAttr");
     m_program->disableAttributeArray("colAttr");
@@ -161,7 +471,7 @@ void GLArea::paintGL()
 
 void GLArea::keyPressEvent(QKeyEvent *ev)
 {
-    //qDebug() << __FUNCTION__ << ev->text();
+    qDebug() << __FUNCTION__ << ev->text();
 
     switch(ev->key()) {
         case Qt::Key_Space :
@@ -218,11 +528,11 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
             update();
             break;
         case Qt::Key_Q :
-            m_x-=0.1f;
+            m_x+=0.1f;
             update();
             break;
         case Qt::Key_D :
-            m_x+=0.1f;
+            m_x-=0.1f;
             update();
             break;
         case Qt::Key_W :
@@ -242,6 +552,14 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
             m_angleZ=0;
             update();
             break;
+        case Qt::Key_Escape:
+            qDebug() <<"m_x" << m_x
+                     <<"m_y" << m_y
+                     <<"m_z" << m_z
+                     <<"a_x" << m_angleX
+                     <<"a_y" << m_angleY
+                     <<"a_z" << m_angleZ;
+
     }
 }
 
@@ -269,8 +587,14 @@ void GLArea::mouseMoveEvent(QMouseEvent *ev)
 void GLArea::onTimeout()
 {
     qDebug() << __FUNCTION__ ;
-    m_anim += 0.01;
-    if (m_anim > 1) m_anim = 0;
+    m_anim += 1;
+    if (m_anim > 360) m_anim = 0;
+    if(m_anim==150 || m_anim==330){
+        if (red_location==1) red_location=3;
+        else if (red_location==2) red_location=1;
+        else if (red_location==3) red_location=4;
+        else if (red_location==4) red_location=2;
+    }
     update();
 }
 
