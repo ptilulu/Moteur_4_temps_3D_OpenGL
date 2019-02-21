@@ -27,7 +27,7 @@ GLArea::GLArea(QWidget *parent) :
     setFocus();                      // donne le focus
 
     m_timer = new QTimer(this);
-    m_timer->setInterval(12);  // msec
+    m_timer->setInterval(50);  // msec
     connect (m_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     connect (this, SIGNAL(radiusChanged(double)), this, SLOT(setRadius(double)));
 
@@ -476,16 +476,35 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
 {
     qDebug() << __FUNCTION__ << ev->text();
 
+    GLfloat value;
     switch(ev->key()) {
         case Qt::Key_Space :
             m_angleY += 1;
             if (m_angleY >= 360) m_angleY -= 360;
             update();
             break;
-        case Qt::Key_A :
-            if (m_timer->isActive())
+        case Qt::Key_S :
                 m_timer->stop();
-            else m_timer->start();
+            break;
+        case Qt::Key_D :
+                m_timer->start();
+            break;
+        case Qt::Key_A :
+            value = m_timer->interval();
+            value = value*10000;
+            if (ev->text() == "a"){
+                qDebug() << "petit a" << value;
+                value=value*1.1f;
+                qDebug() << "petit a" << value;
+                m_timer->setInterval(value/10000+1);
+            }
+            else {
+                qDebug() << "grand a" <<value;
+                value=value*0.9f;
+                value++;
+                qDebug() << "grand a" <<value;
+                m_timer->setInterval(value/10000);
+            }
             break;
         case Qt::Key_R :
             if (ev->text() == "r")
@@ -522,27 +541,27 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
             if (m_angleZ <= -1) m_angleZ += 360;
             update();
             break;
-        case Qt::Key_S :
+        case Qt::Key_G :
             m_z-=0.1f;
             update();
             break;
-        case Qt::Key_Z :
+        case Qt::Key_T :
             m_z+=0.1f;
             update();
             break;
-        case Qt::Key_Q :
+        case Qt::Key_F :
             m_x+=0.1f;
             update();
             break;
-        case Qt::Key_D :
+        case Qt::Key_H :
             m_x-=0.1f;
             update();
             break;
-        case Qt::Key_W :
+        case Qt::Key_U :
             m_y-=0.1f;
             update();
             break;
-        case Qt::Key_X :
+        case Qt::Key_J :
             m_y+=0.1f;
             update();
             break;
@@ -592,7 +611,7 @@ void GLArea::onTimeout()
     qDebug() << __FUNCTION__ ;
     m_anim += 1;
     if (m_anim > 360) m_anim = 0;
-    if(m_anim==150 || m_anim==330){
+    if(m_anim==0 || m_anim==180){
         if (red_location==1) red_location=3;
         else if (red_location==2) red_location=1;
         else if (red_location==3) red_location=4;
