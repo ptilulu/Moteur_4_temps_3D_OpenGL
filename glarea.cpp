@@ -85,6 +85,7 @@ void GLArea::makeGLObjects()
     c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;
     c5->construire_Cylindre(&vertData);     c5->start=decal;    decal+=c5->nb_triangles*3;
     c6->construire_Cylindre(&vertData);     c6->start=decal;    decal+=c6->nb_triangles*3;
+    c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;
     dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;
     dc2->red=1.0;
     dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;
@@ -316,7 +317,15 @@ void GLArea::paintGL()
     normal_mat = world_mat.normalMatrix();
     m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
     m_program->setUniformValue("norMatrix", normal_mat);
-    glDrawArrays(GL_TRIANGLES, c4->start, c4->nb_triangles*3);//cylindre vilbrequin
+    glDrawArrays(GL_TRIANGLES, c4->start, c4->nb_triangles*3);
+    d_z-=0.2;//cylindre1 vilbrequin
+
+    world_mat=base_vilbrequin_mat;
+    world_mat.translate(0,0,d_z);
+    normal_mat = world_mat.normalMatrix();
+    m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
+    m_program->setUniformValue("norMatrix", normal_mat);
+    glDrawArrays(GL_TRIANGLES, c7->start, c7->nb_triangles*3);//cylindre2 vilbrequin
 
 
     double alpha1=(m_anim*M_PI/180);
