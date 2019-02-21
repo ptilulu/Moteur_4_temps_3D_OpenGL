@@ -88,7 +88,7 @@ void GLArea::makeGLObjects()
     c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;      //c2 roue moteur vilbrequin
     dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;     //cylindre coupé
 
-    dc2->red=1.0;
+    dc2->red=0.5;
     dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;     //cylindre coupé (rouge)
 
     m_vbo.create();
@@ -159,6 +159,7 @@ void GLArea::paintGL()
     double t_x1=0.3;   //espacement des masses
     double t_x2=0.6;   //espacement de maneton
     double z_maneton_1,z_maneton_2,z_maneton_3,z_maneton_4;
+
     normal_mat = world_mat.normalMatrix();
     m_program->setUniformValue("mvMatrix", cam_mat*world_mat);
     m_program->setUniformValue("norMatrix", normal_mat);
