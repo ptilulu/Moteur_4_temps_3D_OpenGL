@@ -613,7 +613,7 @@ void GLArea::mouseMoveEvent(QMouseEvent *ev)
 void GLArea::onTimeout()
 {
     qDebug() << __FUNCTION__ ;
-    m_anim += 1;
+    m_anim += 2;
     if (m_anim > 360) m_anim = 0;
     if(m_anim==0 || m_anim==180){
         if (red_location==1) red_location=3;
