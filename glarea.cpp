@@ -79,16 +79,17 @@ void GLArea::makeGLObjects()
 
     QVector<GLfloat> vertData;
     int decal=0;
-    c1->construire_Cylindre(&vertData);     c1->start=decal;    decal+=c1->nb_triangles*3;
-    c2->construire_Cylindre(&vertData);     c2->start=decal;    decal+=c2->nb_triangles*3;
-    c3->construire_Cylindre(&vertData);     c3->start=decal;    decal+=c3->nb_triangles*3;
-    c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;
-    c5->construire_Cylindre(&vertData);     c5->start=decal;    decal+=c5->nb_triangles*3;
-    c6->construire_Cylindre(&vertData);     c6->start=decal;    decal+=c6->nb_triangles*3;
-    c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;
-    dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;
+    c1->construire_Cylindre(&vertData);     c1->start=decal;    decal+=c1->nb_triangles*3;      //grand tourillon
+    c2->construire_Cylindre(&vertData);     c2->start=decal;    decal+=c2->nb_triangles*3;      //petit tourillon et maneton
+    c3->construire_Cylindre(&vertData);     c3->start=decal;    decal+=c3->nb_triangles*3;      //masses vilbrequin
+    c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;      //c1 roue moteur vilbrequin
+    c5->construire_Cylindre(&vertData);     c5->start=decal;    decal+=c5->nb_triangles*3;      //bielle
+    c6->construire_Cylindre(&vertData);     c6->start=decal;    decal+=c6->nb_triangles*3;      //piston
+    c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;      //c2 roue moteur vilbrequin
+    dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;     //cylindre coupé
+
     dc2->red=1.0;
-    dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;
+    dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;     //cylindre coupé (rouge)
 
     m_vbo.create();
     m_vbo.bind();
