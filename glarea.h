@@ -56,7 +56,7 @@ private:
 */
     double m_x = 1.3;
     double m_y = 2.3;
-    double m_z = -4;
+    double m_z = -7;
     double m_angleX = 45;
     double m_angleY = 135;
     double m_angleZ = 0;
