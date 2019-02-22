@@ -5,6 +5,7 @@
 #include <QSurfaceFormat>
 #include <QMatrix4x4>
 #include <QVector3D>
+#include <QOpenGLTexture>
 
 static const QString vertexShaderFile   = ":/vertex.glsl";
 static const QString fragmentShaderFile = ":/fragment.glsl";
@@ -65,6 +66,8 @@ void GLArea::initializeGL()
         qWarning("Failed to compile and link shader program:");
         qWarning() << m_program->log();
     }
+    m_program->setUniformValue("texture", 0);
+
 
     // récupère identifiants de "variables" dans les shaders
     //m_posAttr = m_program->attributeLocation("posAttr");
@@ -81,15 +84,19 @@ void GLArea::makeGLObjects()
     int decal=0;
     c1->construire_Cylindre(&vertData);     c1->start=decal;    decal+=c1->nb_triangles*3;      //grand tourillon
     c2->construire_Cylindre(&vertData);     c2->start=decal;    decal+=c2->nb_triangles*3;      //petit tourillon et maneton
-    c3->construire_Cylindre(&vertData);     c3->start=decal;    decal+=c3->nb_triangles*3;      //masses vilbrequin
-    c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;      //c1 roue moteur vilbrequin
+    c3->construire_Cylindre(&vertData);     c3->start=decal;    decal+=c3->nb_triangles*3;      //masses vilebrequin
+    c4->construire_Cylindre(&vertData);     c4->start=decal;    decal+=c4->nb_triangles*3;      //c1 roue moteur vilebrequin
     c5->construire_Cylindre(&vertData);     c5->start=decal;    decal+=c5->nb_triangles*3;      //bielle
     c6->construire_Cylindre(&vertData);     c6->start=decal;    decal+=c6->nb_triangles*3;      //piston
-    c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;      //c2 roue moteur vilbrequin
+    c7->construire_Cylindre(&vertData);     c7->start=decal;    decal+=c7->nb_triangles*3;      //c2 roue moteur vilebrequin
     dc1->construire_demiCylindre(&vertData);dc1->start=decal;   decal+=dc1->nb_triangles*3;     //cylindre coupé
 
     dc2->red=0.5;
     dc2->construire_demiCylindre(&vertData);dc2->start=decal;   decal+=dc2->nb_triangles*3;     //cylindre coupé (rouge)
+
+
+    QImage textureMetal(QString(":/rsc/texture-metal.jpg"));
+    m_textures[0] = new QOpenGLTexture(textureMetal);
 
     m_vbo.create();
     m_vbo.bind();
@@ -99,6 +106,7 @@ void GLArea::makeGLObjects()
 
 void GLArea::tearGLObjects()
 {
+    delete m_textures[0];
     m_vbo.destroy();
 }
 
@@ -143,9 +151,9 @@ void GLArea::paintGL()
     m_program->setUniformValue("norMatrix", normal_mat);
 
     m_program->setAttributeBuffer("posAttr",
-        GL_FLOAT, 0 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
-    m_program->setAttributeBuffer("colAttr",
-        GL_FLOAT, 3 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
+        GL_FLOAT, 0 * sizeof(GLfloat), 3, 5 * sizeof(GLfloat));
+    m_program->setAttributeBuffer("texAttr",
+        GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
     m_program->setAttributeBuffer("norAttr",
         GL_FLOAT, 6 * sizeof(GLfloat), 3, 9 * sizeof(GLfloat));
     m_program->enableAttributeArray("posAttr");
@@ -344,6 +352,9 @@ void GLArea::paintGL()
     beta2=beta2*180/M_PI;
 
 
+
+    m_textures[0]->bind();
+
     world_mat=base_world_mat;
     world_mat.translate((x_piston_1+t_x2*cos(alpha1))/2,h_1/2,z_maneton_1);
     world_mat.rotate(90,0,1,0);
@@ -353,6 +364,10 @@ void GLArea::paintGL()
     m_program->setUniformValue("norMatrix", normal_mat);
     glDrawArrays(GL_TRIANGLES, c5->start, c5->nb_triangles*3);
     //bielle 1
+
+    m_textures[0]->release();
+
+
 
     world_mat=base_world_mat;
     world_mat.translate((x_piston_2+t_x2*cos(alpha2))/2,h_2/2,z_maneton_2);
@@ -476,7 +491,7 @@ void GLArea::paintGL()
     }//chambre 4
 
     m_program->disableAttributeArray("posAttr");
-    m_program->disableAttributeArray("colAttr");
+    m_program->disableAttributeArray("texAttr");
     m_program->disableAttributeArray("norAttr");
 
     m_program->release();

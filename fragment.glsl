@@ -1,6 +1,9 @@
 varying lowp  vec4 col;
 varying highp vec3 nor;
 
+varying mediump vec4 texc;
+uniform sampler2D texture;
+
 void main() {
 
     // Source de lumière normalisée
@@ -19,7 +22,7 @@ void main() {
 
     //gl_FragColor = vec4(nor3, 1.0);
     //gl_FragColor = vec4(lightColor * cosTheta, 1.0);
-    gl_FragColor = vec4(lightColor * cosTheta, 1.0) * col;
+    gl_FragColor = texture2D(texture, texc.st);
 
     //vec3 ambiantLight = vec3 (0.3, 0.3, 0.3);
     //vec3 sumLight = lightColor * cosTheta + ambiantLight;

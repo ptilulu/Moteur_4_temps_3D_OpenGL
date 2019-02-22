@@ -38,3 +38,4 @@ FORMS    += princ.ui \
 
 RESOURCES += \
     tp4.qrc
+

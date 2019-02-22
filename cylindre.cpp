@@ -38,6 +38,22 @@ void Cylindre::construire_Cylindre(QVector<GLfloat> * vertData){
             color[0]/255.-0.1, color[1]/255.-0.1, color[2]/255.-0.1,    //couleur en A et F
             1.0,0.0,0.0
         };
+
+        GLfloat texCoords[] = {
+            0.0, 0.0,
+            0.2, 1.0,
+            1.0, 0.0,
+
+            0.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+
+            0.0, 0.0,
+            0.0, 1.0
+        };
+
+
+
         //                A,B,C, B,C,D, B,D,E, D,E,F
         int ind_col[] = { 1,0,0, 0,0,0, 0,0,0, 0,0,1, };
 
@@ -85,8 +101,8 @@ void Cylindre::construire_Cylindre(QVector<GLfloat> * vertData){
             for (int j = 0; j < 3; j++)
                 vertData->append(vs[ind_ver[i]*3+j]);
             // couleurs sommets
-            for (int j = 0; j < 3; j++)
-                vertData->append(colors[ind_col[i]*3+j]);
+            for (int j = 0; j < 2; j++)
+                vertData->append(texCoords[i*2+j]);
             // normales sommets
             for (int j = 0; j < 3; j++)
                 vertData->append(normals[ind_nor[i]*3+j]);

@@ -9,6 +9,8 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+
 #include "demicylindre.h"
 #include "cylindre.h"
 
@@ -54,6 +56,7 @@ private:
     double m_angleY = 0;
     double m_angleZ = 0;
 */
+    QOpenGLTexture *m_textures[2];
     double m_x = 1.3;
     double m_y = 2.3;
     double m_z = -4;
