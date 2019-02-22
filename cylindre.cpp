@@ -60,9 +60,6 @@ void Cylindre::construire_Cylindre(QVector<GLfloat> * vertData){
 
         QVector3D nBE  = (nBEY+nBCD)/2;
         QVector3D nDC  = (nDCZ+nBCD)/2;
-        qDebug() <<"nBE "<< nBE <<"i" <<i;
-        qDebug() <<"nBCD"<< nBCD <<"i" <<i;
-        qDebug() <<"nDC "<< nDC <<"i" <<i;
 
         GLfloat normals[] = {
             nACB.x(), nACB.y(), nACB.z(),   //n1
