@@ -1,6 +1,6 @@
 #include "cylindre.h"
 
-Cylindre::Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r, int v, int b, boolean lissage)
+Cylindre::Cylindre(GLfloat lar_cyl, GLfloat r_cyl, GLint nb_fac,int r, int v, int b, bool lissage)
 {
     this->lar_cyl = lar_cyl;    // profondeur du cylindre
     this->r_cyl = r_cyl;       // rayon

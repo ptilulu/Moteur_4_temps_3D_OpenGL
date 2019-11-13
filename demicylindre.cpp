@@ -1,6 +1,6 @@
 #include "demicylindre.h"
 
-DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat r_cyl, GLfloat ep_cyl, GLint nb_fac,int r, int v, int b, boolean lissage)
+DemiCylindre::DemiCylindre(GLfloat lar_cyl, GLfloat r_cyl, GLfloat ep_cyl, GLint nb_fac,int r, int v, int b, bool lissage)
 {
     this->lar_cyl = lar_cyl;    // profondeur du cylindre
     this->ep_cyl = ep_cyl;      // epaisseur du cylindre

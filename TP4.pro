@@ -8,8 +8,8 @@ QT       += core gui
 
 CONFIG += c++14
 
-LIBS += -lGLU32\
-        -lOpengl32
+#LIBS += -lGLU32 -lOpengl
+#LIBS += -lglut -lGL -lGLU
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
